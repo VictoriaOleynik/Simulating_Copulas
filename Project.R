@@ -34,10 +34,10 @@ z <- outer(u,v,c21)
 persp(u,v,z,theta = 60, phi = 30)
 
 # We use c21
-a <- -pi/2
-b <- pi/4
-c <- -pi
-d <- 2
+a <- 0
+b <- 3*pi/8
+c <- -3
+d <- -1
 u <- seq(a,b,length=100)
 v <- seq(c,d,length=100)
 f <-function(u,v){return (sin((cos(u)*sqrt(1+u^2+v^2))))}
@@ -56,4 +56,21 @@ print(I1)
 fres <- f(U,V)
 I2 <- (b-a)*(d-c)*mean(f(U,V))
 print(I2)
+
+# Methode 3
+# Importance Sampling
+n <- 10^3
+Uis <- runif(n,0,1)
+Vis <- runif(n,0,1)
+Xis <- 1/8*(-3*pi+3*pi*sqrt(3*Uis+1))
+hist(Xis)
+Yis <- -5+2*sqrt(3*Vis+1)
+hist(Yis)
+p <- function(u,v){return ( 16/(27*pi)*(8*u/(3*pi)+1)*(0.5*v+2.5))}
+I3 <- 1/n*sum(f(Xis,Yis)/p(Xis,Yis))
+print(I3)
+
+# Double-check. Numeric integration
+library(pracma)
+quad2d(f,a,b,c,d)
 
