@@ -34,15 +34,20 @@ z <- outer(u,v,c21)
 persp(u,v,z,theta = 60, phi = 30)
 
 # We use c21
-a <- 0
-b <- 3*pi/8
-c <- -3
-d <- -1
+a <- -1 #0
+b <- 0 # 3*pi/8
+c <- -3 #-3
+d <- -2 #-1
 u <- seq(a,b,length=100)
 v <- seq(c,d,length=100)
-f <-function(u,v){return (sin((cos(u)*sqrt(1+u^2+v^2))))}
+f <-function(u,v){return (1.8*(0.1+sin(cos(u)*sqrt(1+u^2+v^2))))}
 z <- outer(u,v,f)
-persp(u,v,z,theta = 100, phi = 20)
+p <- function(u,v){return ((-u+0.5)*(v+3.5))}
+w <- outer(u,v,p)
+persp3d(u,v,z,col = "blue",alpha=0.2)
+persp3d(u,v,w,col = "green", alpha=0.3,add = TRUE)
+
+# Methode 1
 K <- max(z)
 n <- 10^3
 U <- runif(n,min = a,max = b)
@@ -59,16 +64,17 @@ print(I2)
 
 # Methode 3
 # Importance Sampling
-n <- 10^3
 Uis <- runif(n,0,1)
 Vis <- runif(n,0,1)
-Xis <- 1/8*(-3*pi+3*pi*sqrt(3*Uis+1))
+Xis <- 1/2*(1-sqrt(9-8*Uis))
 hist(Xis)
-Yis <- -5+2*sqrt(3*Vis+1)
+Yis <- -3.5+0.5*sqrt(8*Vis+1)
 hist(Yis)
-p <- function(u,v){return ( 16/(27*pi)*(8*u/(3*pi)+1)*(0.5*v+2.5))}
-I3 <- 1/n*sum(f(Xis,Yis)/p(Xis,Yis))
-print(I3)
+p <- function(u,v){return ((-u+0.5)*(v+3.5))}
+I4 <- 1/n*sum(f(Xis,Yis)/p(Xis,Yis))
+print(I4)
+evol4 <- cumsum(f(Xis,Yis)/p(Xis,Yis))/(1:n)
+plot(Xis,Yis)
 
 # Double-check. Numeric integration
 library(pracma)
